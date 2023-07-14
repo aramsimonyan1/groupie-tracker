@@ -1,0 +1,28 @@
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    background-color: rgb(215, 218, 223);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.container {
+    width: 90%; /* Adjust this value to control the width of the content */
+}
+
+.row {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+}
+
+.band {
+    flex: 0 15% 15%; /* Adjust this value as needed to control the width of each band */
+    padding: 10px;
+}
+
+.band img {
+    width: 50%;
+    height: auto;
+    cursor: pointer;
+}

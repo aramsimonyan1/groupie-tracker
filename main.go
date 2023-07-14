@@ -5,6 +5,7 @@ import (
 	"html/template"
 	"log"
 	"net/http"
+	"strconv"
 )
 
 // Artist represents the structure of an artist
@@ -43,25 +44,79 @@ type Relation struct {
 	Concerts  []ConcertDate `json:"concerts"`
 }
 
+// entry point to REST server
 func main() {
+	fs := http.FileServer(http.Dir("templates"))
+	http.Handle("/static/", http.StripPrefix("/static/", fs))
+
 	http.HandleFunc("/", homeHandler)
 	http.HandleFunc("/artists", artistsHandler)
 	http.HandleFunc("/locations", locationsHandler)
 	http.HandleFunc("/dates", datesHandler)
 	http.HandleFunc("/relation", relationHandler)
 
+	/*
+		We register the atoi function with the template using template.FuncMap and template.New("").Funcs(funcMap).
+		This ensures that the custom function is available within the template. Additionally,
+		we use template.ParseGlob to parse all HTML template files within the "templates" folder and make them available for execution.
+	*/
+	funcMap := template.FuncMap{
+		"atoi": atoi,
+	}
+	tmpl := template.New("").Funcs(funcMap)
+	tmpl = template.Must(tmpl.ParseGlob("templates/*.html"))
+
+	http.HandleFunc("/artists.html", func(w http.ResponseWriter, r *http.Request) {
+		idParam := r.URL.Query().Get("id")
+		data := struct {
+			IDParam string
+		}{
+			IDParam: idParam,
+		}
+		err := tmpl.ExecuteTemplate(w, "artists.html", data)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+	})
+
 	log.Println("Server is running on http://localhost:8080")
-	log.Fatal(http.ListenAndServe(":8080", nil))
+	err := http.ListenAndServe(":8080", nil)
+	if err != nil {
+		panic(err)
+	}
 }
 
+// Takes a string input, attempts to convert it to an integer using strconv.Atoi, and returns the resulting integer. If the conversion fails, it returns 0.
+func atoi(s string) int {
+	num, err := strconv.Atoi(s)
+	if err != nil {
+		return 0
+	}
+	return num
+}
+
+// handles all requests through routh url
 func homeHandler(w http.ResponseWriter, r *http.Request) {
+	response, err := http.Get("https://groupietrackers.herokuapp.com/api/artists")
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer response.Body.Close()
+
+	var artists []Artist
+	err = json.NewDecoder(response.Body).Decode(&artists)
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	tmpl, err := template.ParseFiles("templates/index.html")
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	err = tmpl.Execute(w, nil)
+	err = tmpl.Execute(w, artists)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -88,6 +143,69 @@ func artistsHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	err = tmpl.Execute(w, artists)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+}
+
+/* A new endpoint handler named artistDetailsHandler added to handle the artists.html endpoint
+we retrieve the id query parameter from the request URL using r.URL.Query().Get("id").
+We then convert the ID from a string to an integer using strconv.Atoi.*/
+func artistDetailsHandler(w http.ResponseWriter, r *http.Request) {
+	idParam := r.URL.Query().Get("id")
+	id, err := strconv.Atoi(idParam)
+	if err != nil {
+		http.Error(w, "Invalid artist ID", http.StatusBadRequest)
+		return
+	}
+
+	// Fetch the artists' data from the API endpoint and decode it into the artists slice.
+	response, err := http.Get("https://groupietrackers.herokuapp.com/api/artists")
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	defer response.Body.Close()
+
+	var artists []Artist
+	err = json.NewDecoder(response.Body).Decode(&artists)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	// Find the selected artist by ID
+	var selectedArtist Artist
+	found := false
+	for _, artist := range artists {
+		if artist.ID == id {
+			selectedArtist = artist
+			found = true
+			break
+		}
+	}
+
+	if !found {
+		http.Error(w, "Artist not found", http.StatusNotFound)
+		return
+	}
+
+	// Create a data structure to pass to the template, which includes the selected artist
+	data := struct {
+		Artist Artist
+	}{
+		Artist: selectedArtist,
+	}
+
+	// Parse the artists.html template file and execute it with the data
+	tmpl, err := template.ParseFiles("templates/artists.html")
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	err = tmpl.Execute(w, data)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return

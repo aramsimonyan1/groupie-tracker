@@ -5,29 +5,20 @@
     <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <link rel="stylesheet" href="/static/styles.css">
     <link href="https://fonts.googleapis.com/css?family=Lato|Open+Sans" rel="stylesheet">
-    <title>Index</title>
+    <title>Groupie Tracker</title>
 </head>
+
 <body>
-    <form action="/" method="POST">
-        <div class="flex-container">
-            <div class="item">
-                <label></label>
-                <textarea name="inputText" style="width:350px;" placeholder="Enter your desired text in the input field"></textarea>
-            </div>
-            
-            <div class="item">
-                <label>Select a banner style</label>
-                <select name="banners">
-                    <option value="shadow">Shadow</option>
-                    <option value="standard">Standard</option>
-                    <option value="thinkertoy">Thinkertoy</option>
-                </select>
-            </div>
-            <div class="item">
-                <label>Click</label>
-                <input type="submit" name="submit" value="ASCII art">
-            </div>
-        </div>
-    </form>
+	<div class="container">
+		<h1>Artists/Bands</h1>
+		<div class="row">
+			{{range .}}
+				<div class="band">
+					<h4>{{.Name}}</h4>
+					<a href="artists.html?id={{.ID}}"> <img src="{{.Image}}" alt="{{.Name}}"> </a>
+				</div>
+			{{end}}
+		</div>
+	</div>
 </body>
 </html>

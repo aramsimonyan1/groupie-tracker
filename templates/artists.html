@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Groupie Trackers - Artist Details</title>
+</head>
+<body>
+	<h1>Artist Details</h1>
+	<div>
+		{{if .Artist}}
+			<h2>{{.Artist.Name}}</h2>
+			<p>Year: {{.Artist.Year}}</p>
+			<p>First Album: {{.Artist.FirstAlbum}}</p>
+			<p>Members: {{range .Artist.Members}}{{.}} {{end}}</p>
+		{{else}}
+			<p>Artist not found</p>
+		{{end}}
+	</div>
+</body>
+</html>
+
+
+
+
