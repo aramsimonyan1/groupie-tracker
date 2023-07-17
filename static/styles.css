@@ -3,6 +3,10 @@ body {
     background-color: rgb(215, 218, 223);
 }
 
+.textcentered {
+    text-align: center;
+}
+
 .flex-container {
     display: flex;
     align-items: center;
