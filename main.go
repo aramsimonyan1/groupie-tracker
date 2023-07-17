@@ -49,6 +49,7 @@ func main() {
 	http.HandleFunc("/", homeHandler)
 	http.HandleFunc("/artists", artistsHandler)
 	http.HandleFunc("/artists.html", artistDetailsHandler)
+	http.HandleFunc("/locations.html", locationsHandler)
 
 	log.Println("Server is running on http://localhost:8080")
 	err := http.ListenAndServe(":8080", nil)
@@ -127,6 +128,63 @@ func artistDetailsHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	err = tmpl.Execute(w, artist)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+}
+
+// Retrieves the list of locations from the JSON API and renders the locations.html template to display them.
+func locationsHandler(w http.ResponseWriter, r *http.Request) {
+	idParam := r.URL.Query().Get("id")
+	id, err := strconv.Atoi(idParam)
+	if err != nil {
+		http.Error(w, "Invalid artist ID", http.StatusBadRequest)
+		return
+	}
+
+	response, err := http.Get("https://groupietrackers.herokuapp.com/api/artists")
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	defer response.Body.Close()
+
+	var artists []Artist
+	err = json.NewDecoder(response.Body).Decode(&artists)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	var locations []Location
+	for _, artist := range artists {
+		if artist.ID == id {
+			// Fetch the locations for the specific artist
+			locResponse, err := http.Get(artist.Locations)
+			if err != nil {
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+				return
+			}
+			defer locResponse.Body.Close()
+
+			err = json.NewDecoder(locResponse.Body).Decode(&locations)
+			if err != nil {
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+				return
+			}
+
+			break
+		}
+	}
+
+	tmpl, err := template.ParseFiles("templates/locations.html")
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	err = tmpl.Execute(w, locations)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
