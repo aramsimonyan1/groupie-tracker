@@ -43,10 +43,12 @@ type Relation struct {
 
 // entry point to REST server
 func main() {
+	fs := http.FileServer(http.Dir("static"))
+	http.Handle("/static/", http.StripPrefix("/static/", fs))
+
 	http.HandleFunc("/", homeHandler)
 	http.HandleFunc("/artists", artistsHandler)
 	http.HandleFunc("/artists.html", artistDetailsHandler)
-	http.Handle("/static/", http.FileServer(http.Dir("static")))
 
 	log.Println("Server is running on http://localhost:8080")
 	err := http.ListenAndServe(":8080", nil)

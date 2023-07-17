@@ -1,16 +1,15 @@
-<!DOCTYPE html>  <!-- Declares the document type as HTML. -->
+<!DOCTYPE html>
 <html lang="en">
-<head>  <!-- Contains metadata and the document's title. -->
+<head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <link rel="stylesheet" href="/static/styles.css">
     <link href="https://fonts.googleapis.com/css?family=Lato|Open+Sans" rel="stylesheet">
     <title>Groupie Tracker</title>
 </head>
-
 <body>
-	<div class="container">
-		<h1>Artists/Bands</h1>
+	<h1>Artists/Bands</h1>
+	<div class="flex-container">
 		<div class="row">
 			{{range .}}
 				<div class="band">
