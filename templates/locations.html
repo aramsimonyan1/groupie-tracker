@@ -3,18 +3,22 @@
 <head>
 	<meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-    <link rel="stylesheet" href="/static/styles.css">
     <link href="https://fonts.googleapis.com/css?family=Lato|Open+Sans" rel="stylesheet">
 	<title>Artist Details</title>
+    <link rel="stylesheet" href="/static/styles.css">
 </head>
 <body>
-    <div class="location">
+    <div class="flex-container">
         <h1>Locations</h1>
-        <ul>
+        <div class="row">
             {{range .}}
-            <li>{{.Locations}}</li>
+            <div class="location">
+                <h4>ID: {{.ID}}</h4>
+                <p>Locations: {{.Locations}}</p>
+                <p>Dates: {{.Dates}}</p>
+            </div>
             {{end}}
-        </ul>
+        </div>
     </div>
 </body>
 </html>

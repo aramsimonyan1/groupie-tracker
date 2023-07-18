@@ -28,6 +28,11 @@ type Location struct {
 	Dates     string `json:"dates"`
 }
 
+// LocationResponse represents the structure of the response from the /api/locations endpoint
+type LocationResponse struct {
+	Locations []Location `json:"locations"`
+}
+
 // ConcertDate represents the structure of a concert date
 type ConcertDate struct {
 	ID    int    `json:"id"`
@@ -136,47 +141,21 @@ func artistDetailsHandler(w http.ResponseWriter, r *http.Request) {
 
 // Retrieves the list of locations from the JSON API and renders the locations.html template to display them.
 func locationsHandler(w http.ResponseWriter, r *http.Request) {
-	idParam := r.URL.Query().Get("id")
-	id, err := strconv.Atoi(idParam)
-	if err != nil {
-		http.Error(w, "Invalid artist ID", http.StatusBadRequest)
-		return
-	}
-
-	response, err := http.Get("https://groupietrackers.herokuapp.com/api/artists")
+	response, err := http.Get("https://groupietrackers.herokuapp.com/api/locations")
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 	defer response.Body.Close()
 
-	var artists []Artist
-	err = json.NewDecoder(response.Body).Decode(&artists)
+	var locationResponse LocationResponse
+	err = json.NewDecoder(response.Body).Decode(&locationResponse)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	var locations []Location
-	for _, artist := range artists {
-		if artist.ID == id {
-			// Fetch the locations for the specific artist
-			locResponse, err := http.Get(artist.Locations)
-			if err != nil {
-				http.Error(w, err.Error(), http.StatusInternalServerError)
-				return
-			}
-			defer locResponse.Body.Close()
-
-			err = json.NewDecoder(locResponse.Body).Decode(&locations)
-			if err != nil {
-				http.Error(w, err.Error(), http.StatusInternalServerError)
-				return
-			}
-
-			break
-		}
-	}
+	locations := locationResponse.Locations
 
 	tmpl, err := template.ParseFiles("templates/locations.html")
 	if err != nil {
