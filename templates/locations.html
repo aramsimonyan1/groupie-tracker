@@ -3,21 +3,17 @@
 <head>
 	<meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-    <link href="https://fonts.googleapis.com/css?family=Lato|Open+Sans" rel="stylesheet">
 	<title>Locations Details</title>
     <link rel="stylesheet" href="/static/styles.css">
 </head>
 <body>
     <div class="location">
-        <h4>Artist Locations</h4>
-            <ul>
+        <h4>Concert Locations</h4>
+        <ul>
             {{range .}}
                 <li>{{.}}</li>
             {{end}}
-            </ul>
-            <ul>
-                <p><a href="{{.ConcertDates}}">Concert Dates</a></p>
-            </ul>
+        </ul>
     </div>
 </body>
 </html>

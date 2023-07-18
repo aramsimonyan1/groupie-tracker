@@ -37,10 +37,17 @@ type LocationResponse struct {
 	} `json:"index"`
 }
 
-// ConcertDate represents the structure of a concert date
-type ConcertDate struct {
+type Date struct {
 	ID    int    `json:"id"`
 	Dates string `json:"dates"`
+}
+
+// ConcertDate represents the structure of a concert date
+type ConcertDate struct {
+	Index []struct {
+		ID    int      `json:"id"`
+		Dates []string `json:"dates"`
+	} `json:"index"`
 }
 
 // Relation represents the structure of the relations between artists, locations, and dates
@@ -59,6 +66,7 @@ func main() {
 	http.HandleFunc("/artists", artistsHandler)
 	http.HandleFunc("/artists.html", artistDetailsHandler)
 	http.HandleFunc("/locations.html", locationsHandler)
+	http.HandleFunc("/dates.html", datesHandler)
 
 	log.Println("Server is running on http://localhost:8080")
 	err := http.ListenAndServe(":8080", nil)
@@ -181,6 +189,49 @@ func locationsHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	err = tmpl.Execute(w, locations)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+}
+
+func datesHandler(w http.ResponseWriter, r *http.Request) {
+	idParam := r.URL.Query().Get("id")
+	id, err := strconv.Atoi(idParam)
+	if err != nil {
+		http.Error(w, "Invalid artist ID", http.StatusBadRequest)
+		return
+	}
+
+	response, err := http.Get("https://groupietrackers.herokuapp.com/api/dates")
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	defer response.Body.Close()
+
+	var concertDates ConcertDate
+	err = json.NewDecoder(response.Body).Decode(&concertDates)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	var dates []string
+	for _, dat := range concertDates.Index {
+		if dat.ID == id {
+			dates = dat.Dates
+			break
+		}
+	}
+
+	tmpl, err := template.ParseFiles("templates/dates.html")
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	err = tmpl.Execute(w, dates)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
