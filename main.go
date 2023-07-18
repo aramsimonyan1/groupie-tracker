@@ -30,7 +30,11 @@ type Location struct {
 
 // LocationResponse represents the structure of the response from the /api/locations endpoint
 type LocationResponse struct {
-	Locations []Location `json:"locations"`
+	Index []struct {
+		ID        int      `json:"id"`
+		Locations []string `json:"locations"`
+		Dates     string   `json:"dates"`
+	} `json:"index"`
 }
 
 // ConcertDate represents the structure of a concert date
@@ -155,7 +159,7 @@ func locationsHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	locations := locationResponse.Locations
+	locations := locationResponse.Index
 
 	tmpl, err := template.ParseFiles("templates/locations.html")
 	if err != nil {
