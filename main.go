@@ -143,8 +143,15 @@ func artistDetailsHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-// Retrieves the list of locations from the JSON API and renders the locations.html template to display them.
+// Retrieves the locations for a specific artist/band based on the provided ID and renders the locations.html template to display them.
 func locationsHandler(w http.ResponseWriter, r *http.Request) {
+	idParam := r.URL.Query().Get("id")
+	id, err := strconv.Atoi(idParam)
+	if err != nil {
+		http.Error(w, "Invalid artist ID", http.StatusBadRequest)
+		return
+	}
+
 	response, err := http.Get("https://groupietrackers.herokuapp.com/api/locations")
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -159,7 +166,13 @@ func locationsHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	locations := locationResponse.Index
+	var locations []string
+	for _, loc := range locationResponse.Index {
+		if loc.ID == id {
+			locations = loc.Locations
+			break
+		}
+	}
 
 	tmpl, err := template.ParseFiles("templates/locations.html")
 	if err != nil {

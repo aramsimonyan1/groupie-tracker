@@ -8,19 +8,16 @@
     <link rel="stylesheet" href="/static/styles.css">
 </head>
 <body>
-    <div class="row">
-        {{range .}}
-        <div class="location">
-            <h4>ID: {{.ID}}</h4>
-            <p>Locations:</p>
+    <div class="location">
+        <h4>Artist Locations</h4>
             <ul>
-                {{range .Locations}}
-                    <li>{{.}}</li>
-                {{end}}
+            {{range .}}
+                <li>{{.}}</li>
+            {{end}}
             </ul>
-            <p>Dates: {{.Dates}}</p>
-        </div>
-        {{end}}
+            <ul>
+                <p><a href="{{.ConcertDates}}">Concert Dates</a></p>
+            </ul>
     </div>
 </body>
 </html>
