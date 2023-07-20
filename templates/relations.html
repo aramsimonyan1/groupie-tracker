@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <link rel="stylesheet" href="/static/styles.css">
+    <link href="https://fonts.googleapis.com/css?family=Lato|Open+Sans" rel="stylesheet">
+    <title>Relations</title>
+</head>
+<body>
+    <div class="relations">
+        <h4>{{ .ArtistName }}'s concert locations and dates:</h4>
+        <ul>
+            {{ range $location, $dates := . }}
+            <li>
+                <h4>{{ $location }}</h4>
+                <ul>
+                    {{ range $date := $dates }}
+                    <li>{{ $date }}</li>
+                    {{ end }}
+                </ul>
+            </li>
+            {{ end }}
+        </ul>
+    </div>
+</body>
+</html>

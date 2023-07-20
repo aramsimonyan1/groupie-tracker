@@ -51,10 +51,11 @@ type ConcertDate struct {
 }
 
 // Relation represents the structure of the relations between artists, locations, and dates
-type Relation struct {
-	Artists   []Artist      `json:"artists"`
-	Locations []Location    `json:"locations"`
-	Concerts  []ConcertDate `json:"concerts"`
+type Relations struct {
+	Index []struct {
+		ID             int                 `json:"id"`
+		DatesLocations map[string][]string `json:"datesLocations"`
+	} `json:"index"`
 }
 
 // entry point to REST server
@@ -67,6 +68,7 @@ func main() {
 	http.HandleFunc("/artists.html", artistDetailsHandler)
 	http.HandleFunc("/locations.html", locationsHandler)
 	http.HandleFunc("/dates.html", datesHandler)
+	http.HandleFunc("/relations.html", relationsHandler)
 
 	log.Println("Server is running on http://localhost:8080")
 	err := http.ListenAndServe(":8080", nil)
@@ -232,6 +234,50 @@ func datesHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	err = tmpl.Execute(w, dates)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+}
+
+// Retrieves the relations for a specific artist/band based on the provided ID and renders the relations.html template to display them.
+func relationsHandler(w http.ResponseWriter, r *http.Request) {
+	idParam := r.URL.Query().Get("id")
+	id, err := strconv.Atoi(idParam)
+	if err != nil {
+		http.Error(w, "Invalid artist ID", http.StatusBadRequest)
+		return
+	}
+
+	response, err := http.Get("https://groupietrackers.herokuapp.com/api/relation")
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	defer response.Body.Close()
+
+	var relationsData Relations
+	err = json.NewDecoder(response.Body).Decode(&relationsData)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	var datesLocations map[string][]string
+	for _, rel := range relationsData.Index {
+		if rel.ID == id {
+			datesLocations = rel.DatesLocations
+			break
+		}
+	}
+
+	tmpl, err := template.ParseFiles("templates/relations.html")
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	err = tmpl.Execute(w, datesLocations)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
