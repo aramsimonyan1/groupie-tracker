@@ -8,13 +8,16 @@
 	<title>Artist Details</title>
 </head>
 <body>
+	<!--the template is structured to render the artist's details dynamically based on the provided data. 
+		Each field of the Artist struct is accessed using the { {.FieldName} } syntax within the template, 
+		allowing the corresponding information to be displayed in the resulting HTML page.-->
 	<div class="textcentered">
-		<h1>{{.Name}}</h1>
-		<img src="{{.Image}}" alt="{{.Name}}"/>
-		<p>Members: {{range .Members}}{{.}}, {{end}}</p>
-		<p>Creation Date: {{.CreationDate}}</p>
+		<h1>{{.Name}}</h1>  <!-- The {{.Name}} is a template tag that retrieves the Name field from the provided data (Artist struct)-->
+		<img src="{{.Image}}" alt="{{.Name}}"/>  <!-- The src attribute specifies the image URL ({{.Image}}), and the alt attribute provides alternative text for the image ({{.Name}}). -->
+		<p>Members: {{range .Members}}{{.}}, {{end}}</p> <!-- Displays the list of artist members. The {{range .Members}} iterates over each member in the Members field, and {{.}} displays the current member. The trailing {{end}} closes the range. -->
+		<p>Creation Date: {{.CreationDate}}</p> <!-- Displays the bands's creation date.-->
 		<p>First Album: {{.FirstAlbum}}</p>
-		<p><a href="/locations.html?id={{.ID}}">Locations</a></p>
+		<p><a href="/locations.html?id={{.ID}}">Locations</a></p> <!-- This displays a link to the artist's locations. The href attribute specifies the URL ({{.Locations}}), and the link text is "Locations".-->
 		<p><a href="/dates.html?id={{.ID}}">Concert Dates</a></p>
 		<p><a href="/relations.html?id={{.ID}}">Relations</a></p>
 	</div>
