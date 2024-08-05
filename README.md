@@ -1,46 +1,72 @@
-# groupie-tracker
+## Overview
+The Groupie Trackers web application is designed to provide users with detailed information about various music artists, including their band members, creation dates, first albums, concert locations, and dates. This application utilizes the Groupie Trackers API to fetch and display data in a user-friendly interface.
 
-Repo to create for this project --> https://learn.01founders.co/git/asimonya/groupie-tracker
+## Key Features:
+###
+    Home Page:
+    Displays a list of artists fetched from the Groupie Trackers API.
+    Each artist is presented with their image, name, and a link to view more details.
+    
+    Artist Details Page:
+    Provides comprehensive information about a specific artist.
+    Includes artist's image, name, band members, creation date, first album, and links to their locations and concert dates.
 
-## Objectives
-Groupie Trackers consists on receiving a given API and manipulate the data contained in it, in order to create a site, displaying the information.
+    Locations Page:
+    Displays the locations where a specific artist has performed concerts.
+    The data is fetched from the Groupie Trackers API and presented in a list format.
 
-It will be given an API, that consists in four parts:
+    Concert Dates Page:
+    Shows the dates of concerts for a specific artist.
+    The concert dates are retrieved from the Groupie Trackers API.
 
-    The first one, artists, containing information about some bands and artists like their name(s), image, in which year they began their activity, the date of their first album and the members.
+    Relations Page:
+    Displays the relationship between an artist's concert locations and dates.
+    Provides a comprehensive view of where and when an artist has performed.
+    
+## Technical Details:
+###
+    Backend:
+    Written in Go, utilizing the net/http package for handling HTTP requests and responses.
+    Parses JSON responses from the Groupie Trackers API to extract relevant data.
 
-    The second one, locations, consists in their last and/or upcoming concert locations.
+    Frontend:
+    Utilizes HTML templates to render dynamic content on the web pages.
+    CSS for styling and creating a visually appealing user interface.
+    
+    API Integration:
+    Fetches data from the Groupie Trackers API endpoints (/api/artists, /api/locations, /api/dates, /api/relation).
+    Decodes JSON responses into Go structs for easy manipulation and display.
+    
+    Endpoints and Handlers:
+    1. HomeHandler:
+    Endpoint: /
+    Fetches and displays a list of artists.
+    2. ArtistDetailsHandler:
+    Endpoint: /artists.html
+    Displays details of a specific artist based on the provided ID.
+    3. LocationsHandler:
+    Endpoint: /locations.html
+    Shows the concert locations for a specific artist.
+    4. DatesHandler:
+    Endpoint: /dates.html
+    Displays concert dates for a specific artist.
+    5. RelationsHandler:
+    Endpoint: /relations.html
+    Presents the relations between an artist's concert dates and locations.
+    6. NotFoundHandler:
+    Handles invalid routes and displays a "Page not found" message.
 
-    The third one, dates, consists in their last and/or upcoming concert dates.
+## Steps to Run the Project
+###
+    1. Ensure Go is installed
+    2. Clone this repository to your local machine using the following command:
+        git clone https://github.com/aramsimonyan1/groupie-tracker.git
+        
+    3. Navigate to the project directory
+    cd <project-directory>    
+    
+    4. Execute the following command to run the Go application:
+    go run main.go
 
-    And the last one, relation, does the link between all the other parts, artists, dates and locations.
-
-
-Given all this you should build a user friendly website where you can display the bands info through several data visualizations (examples : blocks, cards, tables, list, pages, graphics, etc). It is up to you to decide how you will display it.
-
-
-This project also focuses on the creation of events/actions and on their visualization.
-    The event/action we want you to do is known as a client call to the server (client-server). We can say it is a feature of your choice that needs to trigger an action. This action must communicate with the server in order to recieve information, ([request-response])(https://en.wikipedia.org/wiki/Request%E2%80%93response)
-    An event consists in a system that responds to some kind of action triggered by the client, time, or any other factor.
-
-
-## Instructions
-    The backend must be written in Go.
-    The site and server cannot crash at any time.
-    All pages must work correctly and you must take care of any errors.
-    The code must respect the good practices.
-    It is recommended to have test files for unit testing.
-
-## Allowed packages
-Only the standard Go packages are allowed.
-
-## Usage
-
-    You can see an example of a RESTful API here: https://rickandmortyapi.com/
-
-This project will help you learn about :
-    Manipulation and storage of data.
-    JSON files and format.
-    HTML.
-    Event creation and display.
-    Client-server.
+    5. Open your preferred web browser (Chrome is recommended over Edge) and go to the following URL: 
+    http://localhost:8080/ 
